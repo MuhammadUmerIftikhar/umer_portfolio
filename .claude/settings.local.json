@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"c:\\\\Users\\\\devil\\\\Documents\\\\muhammadumeriftikhar\"; $proc = Start-Process -FilePath \"npm\" -ArgumentList \"run\", \"dev\" -PassThru -WindowStyle Hidden; Start-Sleep -Seconds 6; Write-Output \"Dev server PID: $\\($proc.Id\\)\")",
+      "WebFetch(domain:www.upwork.com)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\devil\\\\Documents\\\\muhammadumeriftikhar\\\\public\" | Where-Object { $_.Name -match \"Shadow|Rewind|Echo|Icon|jpeg|mp4\" } | Select-Object Name)"
+    ]
+  }
+}
