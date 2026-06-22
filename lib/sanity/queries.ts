@@ -7,12 +7,8 @@ import type {
 } from "./types";
 
 /* ── helpers ── */
-const isSanityConfigured =
-  !!process.env.NEXT_PUBLIC_SANITY_PROJECT_ID &&
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID !== "";
-
 async function safeFetch<T>(query: string, fallback: T): Promise<T> {
-  if (!isSanityConfigured) return fallback;
+  if (!client) return fallback;
   try {
     const result = await client.fetch<T>(query);
     return result ?? fallback;
