@@ -33,7 +33,7 @@ const socialLinks = [
 
 export default function ContactForm() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", subject: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Partial<FormState>>({});
 
   const validate = () => {
@@ -45,7 +45,7 @@ export default function ContactForm() {
     return e;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
@@ -53,12 +53,18 @@ export default function ContactForm() {
       return;
     }
     setErrors({});
-    const subject = encodeURIComponent(form.subject);
-    const body = encodeURIComponent(
-      `Hi Muhammad,\n\nName: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
-    );
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-    setStatus("success");
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Send failed");
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   };
 
   const update = (field: keyof FormState) =>
@@ -149,10 +155,10 @@ export default function ContactForm() {
                     <CheckCircle className="size-8 text-green-400" />
                   </div>
                   <h3 className="text-white text-2xl font-bold mb-3 font-[family-name:var(--font-space-grotesk)]">
-                    Email Client Opened!
+                    Message Sent!
                   </h3>
                   <p className="text-slate-400 text-sm max-w-sm leading-relaxed mb-6">
-                    Your message has been pre-filled in your email client. Hit send and I&apos;ll get back to you within 24 hours.
+                    Thanks for reaching out! I&apos;ll get back to you within 24 hours.
                   </p>
                   <button
                     onClick={() => {
@@ -162,6 +168,30 @@ export default function ContactForm() {
                     className="px-6 py-2.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-white text-sm font-medium hover:bg-purple-500/20 transition-all"
                   >
                     Send Another
+                  </button>
+                </motion.div>
+              ) : status === "error" ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="glass rounded-2xl p-10 border border-red-500/20 flex flex-col items-center justify-center text-center h-full min-h-[400px]"
+                >
+                  <div className="size-16 rounded-full bg-red-500/15 border border-red-500/25 flex items-center justify-center mb-5">
+                    <Mail className="size-8 text-red-400" />
+                  </div>
+                  <h3 className="text-white text-2xl font-bold mb-3 font-[family-name:var(--font-space-grotesk)]">
+                    Something went wrong
+                  </h3>
+                  <p className="text-slate-400 text-sm max-w-sm leading-relaxed mb-6">
+                    Could not send your message. Please try emailing directly at{" "}
+                    <a href={`mailto:${CONTACT_EMAIL}`} className="text-purple-400 hover:underline">{CONTACT_EMAIL}</a>
+                  </p>
+                  <button
+                    onClick={() => setStatus("idle")}
+                    className="px-6 py-2.5 rounded-xl border border-purple-500/30 bg-purple-500/10 text-white text-sm font-medium hover:bg-purple-500/20 transition-all"
+                  >
+                    Try Again
                   </button>
                 </motion.div>
               ) : (
