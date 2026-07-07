@@ -33,7 +33,7 @@ interface TechnologiesProps {
 }
 
 export default function Technologies({ techStack }: TechnologiesProps) {
-  const items = techStack ?? staticTech;
+  const items = techStack?.length ? techStack : staticTech;
 
   return (
     <section className="relative py-14 border-y border-purple-500/10">

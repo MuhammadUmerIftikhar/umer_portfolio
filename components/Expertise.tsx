@@ -21,7 +21,7 @@ interface ExpertiseProps {
 }
 
 export default function Expertise({ expertise }: ExpertiseProps) {
-  const items = expertise ?? staticExpertise;
+  const items = expertise?.length ? expertise : staticExpertise;
 
   return (
     <section id="expertise" className="relative py-24">
